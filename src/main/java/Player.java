@@ -11,14 +11,22 @@ public class Player {
         this.preference = preference;
     }
 
-    public  Card[] getHand() {
+    public Card[] getHand() {
         return hand;
     }
-    public void setHand(Card[] hand) {
-        this.hand = hand;
+//    public void setHand(Card[] hand) {
+//        this.hand = hand;
+//    }
+
+    public void takeTurn() {
+        // TODO
     }
 
-    public void drawDiscard() {
+    private void draw() {
+        // TODO
+    }
+
+    private void discard() {
         // TODO
     }
 

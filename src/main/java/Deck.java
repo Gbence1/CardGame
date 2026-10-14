@@ -1,14 +1,17 @@
-import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Deck {
-    private ArrayList<Card> cardsQueue;
+    private final LinkedBlockingQueue<Card> cards;
+
     public Deck() {
-        cardsQueue = new ArrayList<>();
+        cards = new LinkedBlockingQueue<>();
     }
-    public void drawCard(Card card) {
-        cardsQueue.add(card);
+
+    public Card draw() throws InterruptedException {
+        return cards.take();
     }
-    public Card getCard() {
-        return cardsQueue.get(0);
+
+    public void discard(Card card) throws InterruptedException {
+        cards.put(card);
     }
 }
