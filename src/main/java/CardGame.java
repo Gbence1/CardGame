@@ -1,9 +1,13 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collections;
+
 
 public class CardGame {
     public static void main(String[] args) {
@@ -11,11 +15,49 @@ public class CardGame {
         Scanner scanner = new Scanner(System.in);
 
         int playerCount = getPlayerCount(scanner);
-        List<Integer> pack = getPack(scanner, playerCount)
+        List<Integer> pack = getPack(scanner, playerCount);
+        List<List<Card>> hands = Collections.emptyList();
+        setUpGame(playerCount, pack);
+    }
+
+    static void setUpGame(int n, List<Integer> pack) throws IOException {
+        List<CardDeck> decks = new ArrayList<>();
+        for (int i = 1; i <= n; i++) {
+            decks.add(new CardDeck(i));
+        } // Creates n decks
+
+        AtomicInteger winner = new AtomicInteger(0); 
+        List<Player> players = new ArrayList<>();
+
+        for (int i = 1; i <= n; i++) {
+            CardDeck drawDeck = decks.get(i - 1);
+            CardDeck discardDeck = decks.get(i % n);
+            players.add(new Player(i, drawDeck, discardDeck, winner));
+        } 
+        // Creates n players
+        // Assigns deck i to player i for drawing, and deck i+1 to player i for discarding
+
+        int next = 0;
+        // deals 4 cards to each player, one card per player at a time
+        for (int round = 0; round < 4; round++) {
+            for (Player p : players) {
+                p.draw(new Card(pack.get(next++)));
+            }
+        }
+
+        // Fill decks from remaining cards in pack
+        while (next < pack.size()) {
+            for (CardDeck d : decks) {
+                d.discard(new Card(pack.get(next++)));
+        }
+    }
+
+    
 
     }
 
-    private static int getPlayerCount(Scanner scanner)
+    private static int getPlayerCount(Scanner scanner){
+        // Gets and validates user inputted number of players
         while (true) {
             System.out.println("Please enter the number of players:");
             String line = scanner.nextLine().trim();
@@ -30,6 +72,7 @@ public class CardGame {
     }
 
     private static List<Integer> getPack(Scanner scanner, int n) {
+        // Recieves pack path location, validates it, and reads the pack file at the path
             while (true) {
                 System.out.println("Please enter location of pack to load");
                 String path = scanner.nextLine().trim();

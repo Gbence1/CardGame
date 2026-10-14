@@ -1,9 +1,9 @@
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Deck {
+public class CardDeck {
     private final LinkedBlockingQueue<Card> cards;
 
-    public Deck() {
+    public CardDeck(Integer deckNum) {
         cards = new LinkedBlockingQueue<>();
     }
 
