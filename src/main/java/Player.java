@@ -2,6 +2,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Player {
@@ -41,6 +42,30 @@ public class Player {
 
     public void takeTurn() {
         // TODO: lock both decks, draw, pick discard, discard, write current hand
+        // DONE?
+        CardDeck first;
+        CardDeck second;
+
+        if (drawDeck.getDeckNum() < discardDeck.getDeckNum()) {
+            // All Lock the smaller ID deck first, to avoid a deadlock
+            first = drawDeck;
+            second = discardDeck;
+        } else {
+            first = discardDeck;
+            second = drawDeck;
+        }
+        synchronized(first) {
+            synchronized(second) { //Draw + Discard is an atomic action, so both decks need to be locked the whole time
+                Card drawn = drawDeck.draw();
+                draw(drawn);
+
+                Card toDiscard = chooseDiscard();
+                discard(toDiscard);
+                discardDeck.discard(toDiscard);
+
+                writeHand();
+            }
+        }
         
     }
 
@@ -59,14 +84,22 @@ public class Player {
     }
 
 
-    public void checkHandWrite() {
+    public void writeHand() {
         String message;
         message = "player " + preference + " current hand is " + getHandString();
         output.println(message);
     }
 
 
-
+    private Card chooseDiscard() {
+        List<Card> discardables = new ArrayList<>()
+        for (Card c : hand) {
+            if (c.getValue() != preference) {
+                discardables.add(c);
+            }
+        }
+        return discardables.get(ThreadLocalRandom.current().nextInt(discardables.size()));
+    }
 
     private int getRandInt(int min, int max) {
         Random rand = new Random();
