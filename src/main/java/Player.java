@@ -101,6 +101,18 @@ public class Player {
         return discardables.get(ThreadLocalRandom.current().nextInt(discardables.size()));
     }
 
+    private boolean hasWinningHand() {
+        if (hand.size() != 4) {
+            return false; }
+        int necessary = hand.get(0).getValue();
+        for (Card c : hand) {
+            if (c.getValue() != necessary) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private int getRandInt(int min, int max) {
         Random rand = new Random();
         return rand.nextInt(max - min + 1) + min;
