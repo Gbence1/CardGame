@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Player {
+public class Player implements Runnable {
     private final ArrayList<Card> hand = new ArrayList<>();
     private final int playerNumber;
     private final CardDeck drawDeck;
@@ -18,6 +18,34 @@ public class Player {
         this.discardDeck = discardDeck;
         this.winnerFlag = winnerFlag;
         this.output = output;
+    }
+
+    @Override
+    public void run() {
+        output.println("player " + playerNumber + " initial hand " + getHandString());
+
+        if (hasWinningHand()) {
+            declareWin();
+        }
+
+        while (winnerFlag.get() == 0) {
+            takeTurn();
+            if (hasWinningHand()) {
+                declareWin();
+            }
+        }  
+        finish();
+    }
+
+    private void finish() {
+        int winner = winnerFlag.get();
+        if (winner != playerNumber) {
+            output.println("player " + winner + " has informed player " + playerNumber
+                    + " that player " + winner + " has won");
+        }
+        output.println("player " + playerNumber + " exits");
+        output.println("player " + playerNumber + " hand: " + getHandString());
+    output.flush();
     }
 
     public String getHandString() {
@@ -47,6 +75,10 @@ public class Player {
 
     public void addToHand(Card card) {
         hand.add(card);
+    }
+
+    public void close() {
+        output.close();
     }
 
     public void draw() {
@@ -97,5 +129,12 @@ public class Player {
             }
         }
         return true;
+    }
+
+    private void declareWin() {
+        if (winnerFlag.compareAndSet(0, playerNumber)) {
+            System.out.println("player " + playerNumber + "wins");
+            output.println("player " + playerNumber + "wins");
+        }
     }
 }

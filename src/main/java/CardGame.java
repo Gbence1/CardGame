@@ -1,3 +1,4 @@
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -17,6 +18,32 @@ public class CardGame {
         Player[] players = new Player[playerCount];
 
         setUpGame(playerCount, pack, decks, players);
+
+        try {
+            Thread[] threads = new Thread[playerCount];
+            for (int i = 0; i < playerCount; i++) {
+                threads[i] = new Thread(players[i]);
+                threads[i].start();
+            }
+
+            for (Thread t : threads) {
+                t.join();
+            }
+        
+            for (CardDeck d : decks) {
+                try (PrintWriter w = new PrintWriter(new FileWriter("deck" + d.getDeckNum() + "_output.txt"))) {
+                    w.println("deck" + d.getDeckNum() + " contents: " + d.getContentsString());
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Could not write output files: " + e.getMessage());
+        } catch (InterruptedException e) {
+            
+        } finally {
+            for (Player p : players) {
+            if (p != null) p.close();
+            }
+        }
     }
 
     private static void setUpGame(int playerCount, Card[] pack, CardDeck[] decks, Player[] players) {

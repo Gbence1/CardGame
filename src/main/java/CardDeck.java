@@ -17,6 +17,14 @@ public class CardDeck {
         return cards.take();
     }
 
+    public String getContentsString() {
+        String out = "";
+        for (Card c : cards) {
+        out = out + " " + c.getValue();
+    }
+    return out.trim();
+    }
+
     public void insertAtBottom(Card card) throws InterruptedException {
         cards.put(card);
     }
