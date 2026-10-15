@@ -1,9 +1,12 @@
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Player {
-    private Card[] hand =  new Card[4];
+    //private Card[] hand =  new Card[4];
+    private List<Card> hand = new ArrayList<>();
     private final int preference;
     private final CardDeck drawDeck;
     private final CardDeck discardDeck;
@@ -21,8 +24,8 @@ public class Player {
         this.output = output;
     }
 
-    public Card[] getHand() {
-        return hand;
+    public List<Card> getHand() {
+        return new ArrayList<>(hand);
     }
 
     public String getHandString() {
@@ -30,48 +33,38 @@ public class Player {
         for (Card c : hand) {
             handString = handString + ' ' + c.getValue();
         }
-        return handString;
+        return handString.trim();
     }
 //    public void setHand(Card[] hand) {
 //        this.hand = hand;
 //    }
 
     public void takeTurn() {
-        // TODO
+        // TODO: lock both decks, draw, pick discard, discard, write current hand
+        
     }
 
     public void draw(Card card) {
-        // TODO
-    }
-
-
-    public void drawDiscardWrite(Integer action, Integer cardVal) {
-        // action: 1 = draw, 2 = discard
-        String message;
-        if (action == 1) {
-            message = "player " + preference + " draws a " + cardVal + " from deck " + drawDeck;
-        } else if (action == 2) {
-            message = "player " + preference + " discards a " + cardVal + " to deck " + discardDeck;
-        } else {
-            System.out.println("Invalid action");
-            return;
-        }
+        hand.add(card);
+        String message = "player " + preference + " draws a " + card.getValue() + " from deck " + drawDeck.getDeckNum();
         output.println(message);
+
     }
 
-    public void checkHandWrite(Boolean initial) {
+    public void discard(Card card) {
+        // TODO ? is this method supposed to affect the discard deck or does that happen in the takeTurn method
+        String message = "player " + preference + " discards a " + card.getValue() + " to deck " + discardDeck.getDeckNum();
+        output.println(message);
+        hand.remove(card);
+    }
+
+
+    public void checkHandWrite() {
         String message;
-        if (initial) {
-            message = "player " + preference + " initial hand is " + getHandString();
-        } else {
         message = "player " + preference + " current hand is " + getHandString();
-        }
         output.println(message);
     }
 
-    private void discard() {
-        // TODO
-    }
 
 
 
