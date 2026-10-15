@@ -3,6 +3,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class CardDeck {
     private final LinkedBlockingQueue<Card> cards;
     private final Integer deckNum;
+
     public CardDeck(Integer deckNum) {
         cards = new LinkedBlockingQueue<>();
         this.deckNum = deckNum;
@@ -16,7 +17,7 @@ public class CardDeck {
         return cards.take();
     }
 
-    public void discard(Card card) throws InterruptedException {
+    public void insertAtBottom(Card card) throws InterruptedException {
         cards.put(card);
     }
 }
