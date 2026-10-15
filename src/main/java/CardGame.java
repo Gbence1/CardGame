@@ -32,7 +32,8 @@ public class CardGame {
         for (int i = 1; i <= n; i++) {
             CardDeck drawDeck = decks.get(i - 1);
             CardDeck discardDeck = decks.get(i % n);
-            players.add(new Player(i, drawDeck, discardDeck, winner));
+            PrintWriter out = new PrintWriter("player" + i + "_output.txt");
+            players.add(new Player(i, drawDeck, discardDeck, winner, out));
         } 
         // Creates n players
         // Assigns deck i to player i for drawing, and deck i+1 to player i for discarding
@@ -77,7 +78,7 @@ public class CardGame {
                 System.out.println("Please enter location of pack to load");
                 String path = scanner.nextLine().trim();
                 try {
-                    return readPack(path, n)
+                    return readPack(path, n);
                 } catch (IOException e) {
                     System.out.println("Could not read file: " + path);
                 } catch (IllegalArgumentException e) {
