@@ -1,4 +1,5 @@
 public class Card {
+    // final + no setter = thread-safe
     private final int value;
 
     public Card(int value) {
