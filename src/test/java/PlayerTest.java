@@ -3,12 +3,10 @@ import org.junit.jupiter.api.Timeout;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
 
@@ -77,7 +75,7 @@ class PlayerTest {
 
         Thread thread = new Thread(player);
         thread.start();
-        // Let threads take a few turns, then stop using the flag
+        // Let threads take a few turns, then stop by using the flag
         Thread.sleep(100);
         winnerFlag.compareAndSet(0, 99);
         thread.join(3000);
@@ -93,7 +91,7 @@ class PlayerTest {
                 int start = line.indexOf("discards a ") + "discards a ".length();
                 int end = line.indexOf(" to deck");
                 String value = line.substring(start, end).trim();
-                assertFalse(value.equals("1"), "discarded a preferred card: " + line);
+                assertNotEquals("1", value, "discarded a preferred card: " + line);
             }
         }
         assertTrue(sawDiscard, "expected at least one discard before we stopped the player");
@@ -173,7 +171,7 @@ class PlayerTest {
     void immediateWinTwoPlayers() throws Exception {
         // Player 1 starts with four 7s in the sample pack; both threads should finish,
         // and we should still have 16 cards across hands + decks
-        Card[] pack = CardGame.loadPack(packPath("packs/immediate_win_n2.txt"), 2);
+        Card[] pack = CardGame.loadPack(packPath(), 2);
         AtomicInteger winnerFlag = new AtomicInteger(0);
 
         CardDeck deck1 = new CardDeck(1);
@@ -240,9 +238,9 @@ class PlayerTest {
         return found;
     }
 
-    private static String packPath(String name) throws Exception {
+    private static String packPath() throws Exception {
         return java.nio.file.Paths.get(
-                PlayerTest.class.getClassLoader().getResource(name).toURI()
+                Objects.requireNonNull(PlayerTest.class.getClassLoader().getResource("packs/immediate_win_n2.txt")).toURI()
         ).toString();
     }
 }
