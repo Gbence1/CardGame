@@ -1,31 +1,37 @@
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class CardDeck {
+    // A LinkedBlockingQueue automatically handles locks
     private final LinkedBlockingQueue<Card> cards;
-    private final Integer deckNum;
+    private final int deckNum;
 
-    public CardDeck(Integer deckNum) {
+    public CardDeck(int deckNum) {
         cards = new LinkedBlockingQueue<>();
         this.deckNum = deckNum;
     }
 
-    public Integer getDeckNum() {
+    public int getDeckNum() {
         return deckNum;
     }
 
-    public Card draw() throws InterruptedException {
-        return cards.take();
+    public Card draw() {
+        // Using poll instead of take because take could end up in a deadlock
+        // where it would never check the flag as it perpetually waits.
+        return cards.poll();
     }
 
     public String getContentsString() {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         for (Card c : cards) {
-        out = out + " " + c.getValue();
-    }
-    return out.trim();
+            out.append(" ").append(c.getValue());
+        }
+        return out.toString().trim();
     }
 
-    public void insertAtBottom(Card card) throws InterruptedException {
-        cards.put(card);
+    public void insertAtBottom(Card card) {
+        // Realistically no issue should ever happen because cards is unbounded so it's never full.
+        if (!cards.offer(card)) {
+            throw new IllegalStateException("Deck " + deckNum + " rejected a card");
+        }
     }
 }
