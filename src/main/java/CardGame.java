@@ -105,12 +105,12 @@ public class CardGame {
     }
 
     private static Card[] getPack(Scanner scanner, int playerCount) {
-        // Gets pack path, validates it, and reads the pack file
+        // Gets pack path, validates it, and loads the pack file
         while (true) {
             System.out.println("Please enter full / relative path to pack to load:");
             String path = scanner.nextLine().trim();
             try {
-                return readPackFile(path, playerCount);
+                return loadPack(path, playerCount);
             } catch (IOException e) {
                 System.out.println("Could not read file: " + path);
             } catch (IllegalArgumentException e) {
@@ -119,13 +119,15 @@ public class CardGame {
         }
     }
 
-    private static Card[] readPackFile(String path, int playerCount) throws IOException {
+    static Card[] loadPack(String path, int playerCount) throws IOException {
+        // Loads the pack file and validates the content (8n rows of non-negative integers)
         int expectedSize = 8 * playerCount;
         List<String> lines = Files.readAllLines(Path.of(path));
 
         if (lines.size() != expectedSize) {
-            throw new IllegalArgumentException("Expected " + (expectedSize) + " rows but found " + lines.size());
+            throw new IllegalArgumentException("Expected " + expectedSize + " rows but found " + lines.size());
         }
+
         Card[] pack = new Card[expectedSize];
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i).trim();
