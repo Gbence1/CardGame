@@ -68,7 +68,9 @@ public class Player implements Runnable {
 
         //Draw + Discard is an atomic action, so both decks need to be locked the whole time
         boolean drawSuccess = true;
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (first) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (second) {
                 // If for some reason couldn't draw, skip discarding to maintain atomicity
                 if (draw()) {
